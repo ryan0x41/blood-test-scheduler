@@ -31,7 +31,6 @@ public class SchedulerQueue {
         // we need to tell HeapPriorityQueue how to compare appointments, we do this by using a lambda
         // expression, and we are basically passing HeapPriorityQueue a function, which it will have the
         // ability to call, Comparator needs this function to compare appointments
-
         // the function uses a lambda expression, basically the function takes an appointment and extracts the priority
         // and converts it to an integer with ordinal, Comparator can use this function to compare two appointments to
         // see which has the higher priority
@@ -60,10 +59,10 @@ public class SchedulerQueue {
 
         // create a new appointment with the patient
         Appointment appointment = new Appointment(
-            "A" + System.currentTimeMillis(), // generate unique appointmentId
-            nextPatient,
-            priority,
-            LocalDateTime.now()
+                "A" + System.currentTimeMillis(), // generate unique appointmentId
+                nextPatient,
+                priority,
+                LocalDateTime.now()
         );
 
         // insert that appointment into the priority queue
@@ -188,6 +187,59 @@ public class SchedulerQueue {
             sb.append("- ").append(noShow).append("\n");
         }
         return sb.toString();
+    }
+
+    // recursive search in both waiting and appointment queue
+    public String recursiveSearchByName(String searchName) {
+        List<Patient> patients = new ArrayList<>();
+
+        // extract patients from waitingQueue while preserving
+        Queue<Patient> tempQueue = new LinkedQueue<>();
+        while (!waitingQueue.isEmpty()) {
+            Patient p = waitingQueue.dequeue();
+            patients.add(p);
+            tempQueue.enqueue(p);
+        }
+        while (!tempQueue.isEmpty()) {
+            waitingQueue.enqueue(tempQueue.dequeue());
+        }
+
+        // extract patients from appointmentQueue while preserving
+        List<Patient> appointmentPatients = new ArrayList<>();
+        List<Appointment> tempAppointments = new ArrayList<>();
+        while (!appointmentQueue.isEmpty()) {
+            Appointment a = appointmentQueue.remove();
+            appointmentPatients.add(a.getPatient());
+            tempAppointments.add(a);
+        }
+        for (Appointment a : tempAppointments) {
+            appointmentQueue.insert(a);
+        }
+        patients.addAll(appointmentPatients);
+
+        List<Patient> results = new ArrayList<>();
+        recursiveSearchHelper(patients, searchName.toLowerCase(), 0, results);
+
+        if (results.isEmpty()) {
+            return "no matching patients found";
+        }
+
+        StringBuilder sb = new StringBuilder("matching patients:\n");
+        for (Patient p : results) {
+            sb.append(p.toString()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    private void recursiveSearchHelper(List<Patient> patients, String searchName, int index, List<Patient> results) {
+        if (index >= patients.size()) {
+            return;
+        }
+        Patient current = patients.get(index);
+        if (current.getName().toLowerCase().contains(searchName)) {
+            results.add(current);
+        }
+        recursiveSearchHelper(patients, searchName, index + 1, results);
     }
 
     // other methods we might need

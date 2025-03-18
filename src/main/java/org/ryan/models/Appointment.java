@@ -22,6 +22,6 @@ public class Appointment {
 
     @Override
     public String toString() {
-        return "[" + priority + "] " + patient.getName() + " at " + scheduledTime;
+        return "[" + appointmentId + "] [" + priority + "] " + patient.getName() + " at " + scheduledTime;
     }
 }
