@@ -24,7 +24,7 @@ Queue<T>
 Stack<T>
 ```
 
-Not much needed to be said here, stack has the usual `push()` and `pop()` same with both queue interfaces having `enqueue()` and `dequeue()`
+Not much needed to be said here, stack has the usual `push()` and `pop()`, `insert()` and `remove()` for `PriorityQueue<T>` and `enqueue()`, `dequeue()` for `Queue<T>`
 
 ---
 
